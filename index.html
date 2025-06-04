@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo World</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Photo Corner</h1>
+        <video id="webcam" autoplay></video>
+        <button id="capture">📸 Take Photo</button>
+        <button id="refresh">🔄 Refresh</button>
+
+        <div class="photo-strip-container">
+            <div class="photo-strip">
+                <img id="slot1" class="photo-slot" src="" alt="">
+                <img id="slot2" class="photo-slot" src="" alt="">
+                <img id="slot3" class="photo-slot" src="" alt="">
+                <img id="slot4" class="photo-slot" src="" alt="">
+            </div>
+        </div>
+
+        <label for="backgrounds">Choose a background:</label>
+        <select id="backgrounds">
+            <option value="./img/miffy.jpg">Miffy</option>
+            <option value="./img/sanrio.jpg">Sanrio</option>
+            <option value="./img/sonny.jpg">Sonny</option>
+        </select>
+
+        <button id="download">📥 Download Strip</button>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

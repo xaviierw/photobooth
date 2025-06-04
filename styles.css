@@ -1,0 +1,70 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f4f4f4;
+}
+
+.container {
+    margin: 20px auto;
+    width: 50%;
+    max-width: 400px;
+    padding: 20px;
+    background: white;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+video {
+    width: 100%;
+    border-radius: 10px;
+}
+
+video {
+    transform: scaleX(-1);
+}
+
+button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    background: #ff4081;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+button:hover {
+    background: #e91e63;
+}
+
+.photo-strip-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.photo-strip {
+    width: 120px;
+    background: white;
+    padding: 10px;
+    border: 2px solid black;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.photo-slot {
+    width: 100px;
+    height: 75px;
+    object-fit: cover;
+    border: 2px solid #333;
+    background: #ddd;
+}
+
+select {
+    margin-top: 10px;
+    padding: 5px;
+    font-size: 16px;
+    border-radius: 5px;
+}
