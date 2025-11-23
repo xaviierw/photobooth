@@ -17,9 +17,6 @@ body {
 video {
     width: 100%;
     border-radius: 10px;
-}
-
-video {
     transform: scaleX(-1);
 }
 
