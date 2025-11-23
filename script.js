@@ -2,110 +2,106 @@ const webcam = document.getElementById('webcam');
 const captureButton = document.getElementById('capture');
 const downloadButton = document.getElementById('download');
 const backgroundSelect = document.getElementById('backgrounds');
-const slots = [document.getElementById('slot1'), document.getElementById('slot2'), document.getElementById('slot3'), document.getElementById('slot4')];
+const refreshButton = document.getElementById('refresh');
+
+const slots = [
+  document.getElementById('slot1'),
+  document.getElementById('slot2'),
+  document.getElementById('slot3')
+];
 
 let currentSlot = 0;
 
-// Access webcam
+// Edit the template position here
+const templateSlots = [
+  { x: 100, y: 200, width: 500, height: 500 },   // top frame
+  { x: 100, y: 740, width: 500, height: 500 },   // middle frame
+  { x: 100, y: 1300, width: 500, height: 500 }   // bottom frame
+];
+
 navigator.mediaDevices.getUserMedia({ video: true })
-    .then(stream => {
-        webcam.srcObject = stream;
-    })
-    .catch(error => console.error('Error accessing webcam:', error));
+  .then(stream => {
+    webcam.srcObject = stream;
+  })
+  .catch(error => console.error('Error accessing webcam:', error));
 
-// Capture photo and store in next available slot
 captureButton.addEventListener('click', () => {
-    if (currentSlot >= slots.length) return; // Stop if slots are full
+  if (currentSlot >= slots.length) return;
 
-    const canvas = document.createElement('canvas');
-    const aspectRatio = webcam.videoWidth / webcam.videoHeight;
-    canvas.width = 600;  // Maintain aspect ratio
-    canvas.height = Math.round(canvas.width / aspectRatio);
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(webcam, 0, 0, canvas.width, canvas.height);
+  const canvas = document.createElement('canvas');
+  const aspectRatio = webcam.videoWidth / webcam.videoHeight;
 
-    slots[currentSlot].src = canvas.toDataURL('image/png');
-    slots[currentSlot].style.display = "block"; // Ensure the image is visible
-    currentSlot++;
+  canvas.width = 600;
+  canvas.height = Math.round(canvas.width / aspectRatio);
+
+  const ctx = canvas.getContext('2d');
+
+  ctx.translate(canvas.width, 0);
+  ctx.scale(-1, 1);
+
+  ctx.drawImage(webcam, 0, 0, canvas.width, canvas.height);
+
+  slots[currentSlot].src = canvas.toDataURL('image/png');
+  slots[currentSlot].style.display = 'block';
+  currentSlot++;
 });
-
-const refreshButton = document.getElementById('refresh');
 
 refreshButton.addEventListener('click', () => {
-    location.reload();
+  location.reload();
 });
 
-// Download entire photo strip as an image with selected background
 downloadButton.addEventListener('click', () => {
-    if (currentSlot === 0) {
-        alert("Take at least one photo before downloading.");
-        return;
-    }
+  if (currentSlot === 0) {
+    alert('Take at least one photo before downloading.');
+    return;
+  }
 
-    const stripWidth = 600;  // Standard width for tall photo strips
-    const slotHeight = 350;  // Keep aspect ratio
-    const spacing = 40;      // Space between images
-    const borderSize = 15;   // Keep the side padding narrow
-    const topBottomPadding = 10; // Keep small padding at the top and bottom
-    const stripHeight = slots.length * slotHeight + (slots.length - 1) * spacing + (topBottomPadding * 2);
+  const stripCanvas = document.createElement('canvas');
+  const ctx = stripCanvas.getContext('2d');
 
-    const stripCanvas = document.createElement('canvas');
-    stripCanvas.width = stripWidth + (borderSize * 2); // Narrower white background
-    stripCanvas.height = stripHeight;
-    const ctx = stripCanvas.getContext('2d');
+  const background = new Image();
+  background.src = backgroundSelect.value;
 
-    // Load selected background
-    const background = new Image();
-    background.src = backgroundSelect.value;
-    background.onload = () => {
-        ctx.drawImage(background, 0, 0, stripCanvas.width, stripCanvas.height);
+  background.onload = () => {
+    stripCanvas.width = background.width;
+    stripCanvas.height = background.height;
 
-        // Draw the translucent white padding
-        const whiteStripX = borderSize;
-        const whiteStripWidth = stripCanvas.width - (borderSize * 2);
-        const whiteOpacity = 0.5; // Adjust opacity (0 = fully transparent, 1 = solid)
-        ctx.fillStyle = `rgba(255, 255, 255, ${whiteOpacity})`;
-        ctx.fillRect(whiteStripX, 0, whiteStripWidth, stripCanvas.height);
+    let loaded = 0;
+    const toLoad = slots.filter(s => s.src).length;
 
-        let loadedImages = 0;
-        slots.forEach((slot, index) => {
-            if (slot.src) {
-                const img = new Image();
-                img.src = slot.src;
-                img.onload = () => {
-                    const imgWidth = stripWidth * 0.85;  // Keep aspect ratio
-                    const imgX = (stripCanvas.width - imgWidth) / 2; // Center horizontally
-                    const imgY = topBottomPadding + index * (slotHeight + spacing); // Adjust for thin padding
+    slots.forEach((slot, i) => {
+      if (!slot.src) return;
 
-                    // Apply rounded corners
-                    ctx.save();
-                    ctx.beginPath();
-                    const radius = 10; // Keep rounded corners
-                    ctx.moveTo(imgX + radius, imgY);
-                    ctx.lineTo(imgX + imgWidth - radius, imgY);
-                    ctx.quadraticCurveTo(imgX + imgWidth, imgY, imgX + imgWidth, imgY + radius);
-                    ctx.lineTo(imgX + imgWidth, imgY + slotHeight - radius);
-                    ctx.quadraticCurveTo(imgX + imgWidth, imgY + slotHeight, imgX + imgWidth - radius, imgY + slotHeight);
-                    ctx.lineTo(imgX + radius, imgY + slotHeight);
-                    ctx.quadraticCurveTo(imgX, imgY + slotHeight, imgX, imgY + slotHeight - radius);
-                    ctx.lineTo(imgX, imgY + radius);
-                    ctx.quadraticCurveTo(imgX, imgY, imgX + radius, imgY);
-                    ctx.closePath();
-                    ctx.clip();
+      const img = new Image();
+      img.src = slot.src;
 
-                    // Draw the image inside the rounded area
-                    ctx.drawImage(img, imgX, imgY, imgWidth, slotHeight);
-                    ctx.restore();
+      img.onload = () => {
+        const { x, y, width, height } = templateSlots[i];
 
-                    loadedImages++;
-                    if (loadedImages === currentSlot) {
-                        const link = document.createElement('a');
-                        link.download = 'photo-strip.png';
-                        link.href = stripCanvas.toDataURL('image/png');
-                        link.click();
-                    }
-                };
-            }
-        });
-    };
+        const scale = Math.max(width / img.width, height / img.height);
+        const w = img.width * scale;
+        const h = img.height * scale;
+        const dx = x + (width - w) / 2;
+        const dy = y + (height - h) / 2;
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(x, y, width, height);
+        ctx.clip();
+
+        ctx.drawImage(img, dx, dy, w, h);
+        ctx.restore();
+
+        loaded++;
+        if (loaded === toLoad) {
+          ctx.drawImage(background, 0, 0, stripCanvas.width, stripCanvas.height);
+
+          const link = document.createElement('a');
+          link.download = 'photo-strip.png';
+          link.href = stripCanvas.toDataURL('image/png');
+          link.click();
+        }
+      };
+    });
+  };
 });

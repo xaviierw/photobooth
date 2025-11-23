@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Photo World</title>
+    <title>Photobooth</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <h1>Photo Corner</h1>
+        <h1>Smile! 😊</h1>
+
         <video id="webcam" autoplay></video>
+
         <button id="capture">📸 Take Photo</button>
         <button id="refresh">🔄 Refresh</button>
 
@@ -18,19 +20,22 @@
                 <img id="slot1" class="photo-slot" src="" alt="">
                 <img id="slot2" class="photo-slot" src="" alt="">
                 <img id="slot3" class="photo-slot" src="" alt="">
-                <img id="slot4" class="photo-slot" src="" alt="">
             </div>
         </div>
 
-        <label for="backgrounds">Choose a background:</label>
+        <label for="backgrounds">Choose a frame background:</label>
         <select id="backgrounds">
-            <option value="./img/miffy.jpg">Miffy</option>
-            <option value="./img/sanrio.jpg">Sanrio</option>
-            <option value="./img/sonny.jpg">Sonny</option>
+            <option value="./img/Mofusan.png">Mofusan</option>
+            <option value="./img/Sanrio.png">Sanrio</option>
         </select>
 
-        <button id="download">📥 Download Strip</button>
+        <button id="download">Download Strip</button>
+        <hr>
+        <p>Photoframe style will be applied after download!</p>
     </div>
+        <p>Side Project by: Xavier Wong | <a href="https://github.com/xaviierw" target="_blank">GitHub: xaviierw</a></p>
+
+
     <script src="script.js"></script>
 </body>
 </html>
